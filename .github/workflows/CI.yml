@@ -57,19 +57,18 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: alembic upgrade head
           
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run:
           pytest tests/ -v
 
   build:
     needs: [lint, test]
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-24.04 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
