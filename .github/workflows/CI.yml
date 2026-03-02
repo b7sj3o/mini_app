@@ -25,6 +25,7 @@ jobs:
         run: ruff check app/ tests/
 
   test:
+    needs: [lint]
     runs-on: ubuntu-latest
 
     services:
@@ -64,3 +65,22 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci_test
         run:
           pytest tests/ -v
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: mini-app:latest
